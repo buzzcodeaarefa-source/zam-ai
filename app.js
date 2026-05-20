@@ -355,7 +355,8 @@ function switchTab(tabId) {
     reminders: "Medication Reminders",
     identifier: "Visual Pill Identifier",
     profile: "My Health & AI Settings",
-    firstaid: "First Aid Emergency Center"
+    firstaid: "First Aid Emergency Center",
+    guide: "MedZamanti User Guide & Help Center"
   };
   
   DOM.viewTitle.textContent = titles[tabId] || "MedZamanti";
@@ -414,6 +415,27 @@ function initNetworkStatus() {
 function initProfileSettings() {
   // Sync profile data to UI
   syncProfileUI();
+  
+  // Setup password toggle for Custom API Key input
+  setupPasswordToggle('profGeminiKey', 'toggleProfGeminiKey');
+
+  // Handle Load Default API Key action
+  const useDefaultKeyBtn = document.getElementById('useDefaultKeyBtn');
+  const defaultKeyAlert = document.getElementById('defaultKeyAlert');
+  if (useDefaultKeyBtn) {
+    useDefaultKeyBtn.addEventListener('click', () => {
+      const defaultKey = "AIzaSyBx18P_6hxQ1kEhTAt_QJklurbLavUFXaU";
+      DOM.profGeminiKey.value = defaultKey;
+      
+      // Show checkmark alert
+      if (defaultKeyAlert) {
+        defaultKeyAlert.style.display = 'inline-flex';
+        setTimeout(() => {
+          defaultKeyAlert.style.display = 'none';
+        }, 3000);
+      }
+    });
+  }
 
   // Handle Add Custom Allergy
   DOM.addCustomAllergyBtn.addEventListener('click', () => {
@@ -537,10 +559,10 @@ function syncProfileUI() {
 
   // API Badge status
   if (navigator.onLine) {
-    DOM.apiKeyStatus.textContent = "Gemini AI Live";
+    DOM.apiKeyStatus.textContent = "Live";
     DOM.apiKeyStatus.className = "api-badge active";
   } else {
-    DOM.apiKeyStatus.textContent = "Offline Local AI";
+    DOM.apiKeyStatus.textContent = "Offline";
     DOM.apiKeyStatus.className = "api-badge inactive";
   }
 
@@ -1608,6 +1630,39 @@ function openDrugModal(drug) {
   DOM.drugDetailModal.classList.add('active');
 }
 
+// --- PASSWORD VISIBILITY TOGGLE HELPER ---
+function setupPasswordToggle(inputId, toggleId) {
+  const input = document.getElementById(inputId);
+  const toggle = document.getElementById(toggleId);
+  if (!input || !toggle) return;
+
+  const eyeOpenSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  `;
+  
+  const eyeClosedSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.895 7.895L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+    </svg>
+  `;
+
+  toggle.innerHTML = eyeOpenSvg;
+
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (input.type === 'password') {
+      input.type = 'text';
+      toggle.innerHTML = eyeClosedSvg;
+    } else {
+      input.type = 'password';
+      toggle.innerHTML = eyeOpenSvg;
+    }
+  });
+}
+
 // --- MULTI-USER AUTHENTICATION CONTROLLERS ---
 function initAuthentication() {
   // View switches
@@ -1626,10 +1681,21 @@ function initAuthentication() {
   DOM.signupBtn.addEventListener('click', signupUser);
   DOM.logoutBtn.addEventListener('click', logoutUser);
 
-  // Pressing Enter key to trigger login
-  DOM.loginPassword.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') loginUser();
-  });
+  // Setup Password Eye Toggles
+  setupPasswordToggle('loginPassword', 'toggleLoginPassword');
+  setupPasswordToggle('signupPassword', 'toggleSignupPassword');
+  setupPasswordToggle('signupConfirmPassword', 'toggleSignupConfirmPassword');
+
+  // Pressing Enter key triggers
+  const triggerLoginOnEnter = (e) => { if (e.key === 'Enter') loginUser(); };
+  DOM.loginEmail.addEventListener('keydown', triggerLoginOnEnter);
+  DOM.loginPassword.addEventListener('keydown', triggerLoginOnEnter);
+
+  const triggerSignupOnEnter = (e) => { if (e.key === 'Enter') signupUser(); };
+  DOM.signupName.addEventListener('keydown', triggerSignupOnEnter);
+  DOM.signupEmail.addEventListener('keydown', triggerSignupOnEnter);
+  DOM.signupPassword.addEventListener('keydown', triggerSignupOnEnter);
+  DOM.signupConfirmPassword.addEventListener('keydown', triggerSignupOnEnter);
 }
 
 function loginUser() {
@@ -1642,7 +1708,8 @@ function loginUser() {
   }
 
   const users = JSON.parse(localStorage.getItem('medzamanti_users')) || [];
-  const user = users.find(u => u.email === email && u.password === password);
+  // Perform case-insensitive search on stored email values
+  const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
 
   if (!user) {
     alert("Invalid email or password. Please try again.");
@@ -1700,7 +1767,7 @@ function signupUser() {
   }
 
   const users = JSON.parse(localStorage.getItem('medzamanti_users')) || [];
-  const exists = users.some(u => u.email === email);
+  const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
 
   if (exists) {
     alert("This email address is already registered.");

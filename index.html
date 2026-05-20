@@ -47,7 +47,12 @@
         </div>
         <div class="form-group" style="margin-bottom: 16px;">
           <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Enter your password...">
+          <div class="password-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+            <input type="password" id="loginPassword" placeholder="Enter your password..." style="padding-right: 42px; width: 100%;">
+            <button type="button" class="password-toggle-btn" id="toggleLoginPassword" style="position: absolute; right: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center;">
+              <!-- Icon populated by JS -->
+            </button>
+          </div>
         </div>
         <button class="check-btn" id="loginBtn" style="margin-bottom: 16px;">Sign In</button>
         <p class="auth-toggle-text">Don't have an account? <span id="switchToSignup">Sign Up</span></p>
@@ -66,11 +71,21 @@
         </div>
         <div class="form-group" style="margin-bottom: 12px;">
           <label for="signupPassword">Password</label>
-          <input type="password" id="signupPassword" placeholder="Create a password...">
+          <div class="password-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+            <input type="password" id="signupPassword" placeholder="Create a password..." style="padding-right: 42px; width: 100%;">
+            <button type="button" class="password-toggle-btn" id="toggleSignupPassword" style="position: absolute; right: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center;">
+              <!-- Icon populated by JS -->
+            </button>
+          </div>
         </div>
         <div class="form-group" style="margin-bottom: 16px;">
           <label for="signupConfirmPassword">Confirm Password</label>
-          <input type="password" id="signupConfirmPassword" placeholder="Confirm your password...">
+          <div class="password-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+            <input type="password" id="signupConfirmPassword" placeholder="Confirm your password..." style="padding-right: 42px; width: 100%;">
+            <button type="button" class="password-toggle-btn" id="toggleSignupConfirmPassword" style="position: absolute; right: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center;">
+              <!-- Icon populated by JS -->
+            </button>
+          </div>
         </div>
         <button class="check-btn" id="signupBtn" style="margin-bottom: 16px;">Create Account</button>
         <p class="auth-toggle-text">Already have an account? <span id="switchToLogin">Sign In</span></p>
@@ -171,6 +186,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h3.75a2.25 2.25 0 012.25 2.25v.75H21a.75.75 0 01.75.75v12.75a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6a.75.75 0 01.75-.75h5.063v-.75a2.25 2.25 0 012.25-2.25zM12 7.5h.008v.008H12V7.5zm0 3.75h.008v.008H12v-.008zm0 3.75h.008v.008H12v-.008z" />
           </svg>
           <span>First Aid</span>
+        </button>
+
+        <button class="nav-item" data-tab="guide" id="nav-guide">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+          </svg>
+          <span>User Guide</span>
         </button>
       </nav>
 
@@ -684,9 +706,22 @@
               <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Advanced Settings (Optional)</h4>
               <div class="form-group" style="max-width: 500px;">
                 <label for="profGeminiKey">Custom Google Gemini API Key</label>
-                <input type="password" id="profGeminiKey" placeholder="Enter custom API key if the default key has expired...">
+                <div class="password-wrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+                  <input type="password" id="profGeminiKey" placeholder="Enter custom API key if the default key has expired..." style="padding-right: 42px; width: 100%;">
+                  <button type="button" class="password-toggle-btn" id="toggleProfGeminiKey" style="position: absolute; right: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center;">
+                    <!-- Icon populated by JS -->
+                  </button>
+                </div>
+                <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <button type="button" id="useDefaultKeyBtn" class="check-btn" style="width: auto; padding: 6px 12px; margin: 0; font-size: 0.75rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: var(--primary);">
+                    Use Default API Key
+                  </button>
+                  <span id="defaultKeyAlert" style="font-size: 0.75rem; color: var(--status-success); display: none; align-items: center; gap: 4px;">
+                    <span style="font-size: 1rem;">✓</span> Default key loaded
+                  </span>
+                </div>
                 <small style="color: var(--text-muted); display: block; margin-top: 6px; font-size: 0.75rem; line-height: 1.4;">
-                  Note: Stored locally in your browser. Leave blank to use the app's default API key (if active).
+                  Note: Stored locally in your browser. Leave blank or use the default key to run the assistant automatically.
                 </small>
               </div>
             </div>
@@ -782,6 +817,128 @@
                 <li><strong>Flush Skin/Eyes:</strong> If on skin or eyes, rinse thoroughly with warm water for 15 minutes.</li>
               </ol>
             </div>
+          </div>
+        </section>
+
+        <!-- 10. USER GUIDE VIEW -->
+        <section id="view-guide" class="app-view">
+          <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%);">
+            <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 8px;">User Guide & Help Center</h1>
+            <p>Learn how to get the most out of MedZamanti, your advanced pharmacy assistant and health companion.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 24px;" class="profile-input-grid">
+            
+            <!-- Left Column: Details & Step-by-Step -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              
+              <!-- Quick Overview Card -->
+              <div class="wizard-card" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                  <span>📋</span> App Purpose & Capabilities
+                </h3>
+                <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 16px;">
+                  MedZamanti is designed to bridge the gap between complex pharmacological data and patient safety. It provides clinical information, checks drug interactions, identifies mystery pills, and provides AI-powered medical consultation to keep you informed.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                  <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid var(--glass-border);">
+                    <h5 style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary);">💊 Clinical Database</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Access professional prescribing data, dosages, warnings, and visuals.</p>
+                  </div>
+                  <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid var(--glass-border);">
+                    <h5 style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary);">🛡️ Safety Checking</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Check multiple drugs side-by-side to alert you of life-threatening interactions.</p>
+                  </div>
+                  <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid var(--glass-border);">
+                    <h5 style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary);">🤖 AI Consultant</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Chat with our Gemini-powered clinical model tuned for pharmacological safety.</p>
+                  </div>
+                  <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px solid var(--glass-border);">
+                    <h5 style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary);">⏰ Smart Reminders</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Schedule your medications and get instant alarms on your browser or mobile screen.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- API Key Guide -->
+              <div class="wizard-card" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--primary);">
+                  <span>🔑</span> Google Gemini API Key Guide
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
+                  <div style="background: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary); padding: 12px; border-radius: 4px;">
+                    <strong>No Setup Required!</strong> MedZamanti has a <strong>built-in default API key</strong> configured in the backend. You do not need to obtain your own key to start talking to the AI.
+                  </div>
+                  
+                  <p>If you prefer to use your own private API key (e.g., if the default key has run out of its free rate-limits), you can add one easily:</p>
+                  
+                  <ol style="margin-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+                    <li>Go to the <strong>My Health</strong> tab in the sidebar navigation.</li>
+                    <li>Scroll down to the <strong>Advanced Settings (Optional)</strong> section at the bottom.</li>
+                    <li>Type or paste your Gemini API Key in the field. (You can click the 👁️ icon to reveal/verify it).</li>
+                    <li>Click <strong>Save Health Profile</strong> to save the key locally on your device.</li>
+                  </ol>
+                  
+                  <div style="background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--glass-border); padding: 14px; border-radius: 8px; margin-top: 8px;">
+                    <h5 style="font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-main);">How to get your own FREE Gemini API Key:</h5>
+                    <ol style="margin-left: 20px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 6px; color: var(--text-muted);">
+                      <li>Go to <a href="https://ai.google.dev/" target="_blank" style="color: var(--primary); text-decoration: underline;">Google AI Studio</a>.</li>
+                      <li>Log in with your Google account.</li>
+                      <li>Click the <strong>Get API Key</strong> button at the top-left.</li>
+                      <li>Select <strong>Create API Key</strong> in a new project.</li>
+                      <li>Copy the generated key (starts with <code>AIzaSy...</code>) and paste it into the Advanced Settings.</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FAQ Section -->
+              <div class="wizard-card" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 12px;">🙋 Frequently Asked Questions</h3>
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div>
+                    <h5 style="font-weight: 600; font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px;">Q: Why am I getting "Invalid Email or Password" on sign-in?</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                      A: Double-check your spelling. The app checks emails case-insensitively, so casing won't cause issues, but password characters must match exactly. Use the 👁️ (eye button) next to the password inputs to see what you are typing and avoid typos!
+                    </p>
+                  </div>
+                  <div style="border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 12px;">
+                    <h5 style="font-weight: 600; font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px;">Q: Does the app work offline?</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                      A: Yes! If you lose internet, the top badge will turn to <strong>Offline</strong>. The Medication Database, Pill Identifier, Interaction Checker, and Reminders will continue to function using our built-in offline clinical dictionary. The AI Consultant will temporarily pause until you reconnect.
+                    </p>
+                  </div>
+                  <div style="border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 12px;">
+                    <h5 style="font-weight: 600; font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px;">Q: How do I install MedZamanti on my phone?</h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                      A: MedZamanti is a Progressive Web App (PWA). If you are on an Android device using Chrome, click the <strong>Install</strong> banner on the Dashboard. If you are on an iPhone/iOS device, open Safari, click the <strong>Share</strong> button (box with an arrow pointing up), and select <strong>Add to Home Screen</strong>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Quick Stats & Support -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <div class="wizard-card" style="margin-bottom: 0; background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, transparent 100%); border-color: rgba(13, 148, 136, 0.25);">
+                <h4 style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; color: var(--secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                  <span>🚑</span> Emergency Advice
+                </h4>
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); margin-bottom: 12px;">
+                  For sudden severe symptoms like severe bleeding, chest pain, choking, or chemical burns, immediately head to the <strong>First Aid</strong> tab for instant instructions or call your local emergency services (e.g. 911).
+                </p>
+                <button class="check-btn" onclick="switchTab('firstaid')" style="font-size: 0.8rem; padding: 8px 12px;">Open First Aid Guide</button>
+              </div>
+
+              <div class="wizard-card" style="margin-bottom: 0;">
+                <h4 style="font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">🛡️ Medical Disclaimer</h4>
+                <p style="font-size: 0.75rem; line-height: 1.5; color: var(--status-danger); opacity: 0.85;">
+                  MedZamanti is an educational resource and informational database. The AI Consultant's assessments and interaction checkers are designed to highlight potential issues, but they do NOT substitute for diagnostic checkups, prescriptions, or clinical guidance by a certified physician or pharmacist.
+                </p>
+              </div>
+            </div>
+
           </div>
         </section>
 

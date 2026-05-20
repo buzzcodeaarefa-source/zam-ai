@@ -1942,6 +1942,15 @@ input, select, textarea {
   }
 }
 
+.password-toggle-btn {
+  opacity: 0.65;
+  transition: opacity 0.2s, color 0.2s;
+}
+.password-toggle-btn:hover {
+  opacity: 1;
+  color: var(--primary) !important;
+}
+
 /* --- MULTI-USER LOGIN & SIGNUP PORTAL --- */
 .auth-container {
   position: fixed;
