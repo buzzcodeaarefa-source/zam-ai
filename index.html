@@ -9,6 +9,8 @@
   <meta name="theme-color" content="#0d9488">
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" type="image/png" href="./icon.png">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body class="dark-theme">
@@ -179,8 +181,16 @@
           <div class="user-details">
             <span class="user-name" id="userNameLabel">Patient Profile</span>
             <span class="user-status" id="userWarningLabel">Allergies: None</span>
-          </div>
         </div>
+        
+        <!-- PWA Install Button (hidden by default) -->
+        <button id="pwaInstallBtn" class="check-btn" style="display: none; width: calc(100% - 24px); margin: 0 12px 12px 12px; gap: 8px; justify-content: center; align-items: center; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Install App
+        </button>
+
         <div class="footer-actions">
           <button class="theme-toggle-btn" id="themeToggle">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -234,6 +244,41 @@
           <div class="welcome-banner">
             <h1 id="welcomeGreeting">Hello, Patient!</h1>
             <p>Welcome to MedZamanti, your advanced pharmacy database and personal medical assistant. Use the tools below or in the sidebar to check medications, track reminders, check drug interactions, or diagnostic triage guidelines.</p>
+          </div>
+
+          <!-- PWA Install Banner Card -->
+          <div id="pwaInstallBanner" class="pwa-install-banner" style="display: none; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; box-shadow: var(--shadow-md); align-items: center; gap: 16px; justify-content: space-between; flex-wrap: wrap;">
+            <div style="display: flex; gap: 12px; align-items: center; min-width: 250px; flex: 1;">
+              <div style="background: rgba(13, 148, 136, 0.15); color: var(--primary); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 28px; height: 28px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; margin: 0; color: var(--text-main);">Install MedZamanti App</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0 0; line-height: 1.4;">Add to your home screen for instant access, offline mode support, and full-screen experience.</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-shrink: 0;">
+              <button id="pwaInstallBannerClose" class="theme-toggle-btn" style="padding: 8px 16px; font-size: 0.8rem; border-color: rgba(255,255,255,0.1); margin: 0;">Dismiss</button>
+              <button id="pwaInstallBannerBtn" class="check-btn" style="width: auto; padding: 8px 20px; margin: 0; font-size: 0.8rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); font-weight: 600; border: none;">Install Now</button>
+            </div>
+          </div>
+
+          <!-- iOS PWA Install Guide Card -->
+          <div id="iosInstallBanner" class="pwa-install-banner" style="display: none; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; box-shadow: var(--shadow-md); align-items: center; gap: 16px; justify-content: space-between; flex-wrap: wrap;">
+            <div style="display: flex; gap: 12px; align-items: center; min-width: 250px; flex: 1;">
+              <div style="background: rgba(13, 148, 136, 0.15); color: var(--primary); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 28px; height: 28px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; margin: 0; color: var(--text-main);">Install MedZamanti App on iOS</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0 0; line-height: 1.4;">Tap the <strong>Share</strong> button <span style="font-size: 1.1rem; vertical-align: middle;">⎋</span> (at the bottom of Safari) and select <strong>"Add to Home Screen"</strong>.</p>
+              </div>
+            </div>
+            <button id="iosInstallBannerClose" class="theme-toggle-btn" style="padding: 8px 16px; font-size: 0.8rem; border-color: rgba(255,255,255,0.1); margin: 0;">Dismiss</button>
           </div>
 
           <div class="dashboard-stats-grid">
@@ -580,7 +625,7 @@
           <div class="profile-card">
             <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">Patient Clinical Profile</h3>
             
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+            <div class="profile-input-grid">
               <div class="form-group">
                 <label for="profName">Full Name</label>
                 <input type="text" id="profName" placeholder="Enter patient name...">

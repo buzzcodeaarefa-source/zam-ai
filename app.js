@@ -151,7 +151,15 @@ const DOM = {
   modalDrugClass: document.getElementById('modalDrugClass'),
   modalDrugName: document.getElementById('modalDrugName'),
   modalDrugBrand: document.getElementById('modalDrugBrand'),
-  modalDrugBody: document.getElementById('modalDrugBody')
+  modalDrugBody: document.getElementById('modalDrugBody'),
+
+  // PWA Install elements
+  pwaInstallBtn: document.getElementById('pwaInstallBtn'),
+  pwaInstallBanner: document.getElementById('pwaInstallBanner'),
+  pwaInstallBannerBtn: document.getElementById('pwaInstallBannerBtn'),
+  pwaInstallBannerClose: document.getElementById('pwaInstallBannerClose'),
+  iosInstallBanner: document.getElementById('iosInstallBanner'),
+  iosInstallBannerClose: document.getElementById('iosInstallBannerClose')
 };
 
 // Speech Recognition & Text-to-Speech Setup
@@ -208,6 +216,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initPillIdentifier();
   initEmergency();
   initModal();
+  initPwaInstallation();
   updateDashboardStats();
   
   // Set up continuous alarm checks (every minute)
@@ -1417,6 +1426,99 @@ function initModal() {
       DOM.drugDetailModal.classList.remove('active');
     }
   });
+}
+
+// --- PWA INSTALLATION MANAGEMENT ---
+let deferredPrompt;
+
+function initPwaInstallation() {
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the default browser mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    
+    // Check if the user has previously dismissed the banner in this session
+    const isDismissed = sessionStorage.getItem('pwa_install_dismissed') === 'true';
+    
+    // Show the custom install UI elements
+    if (DOM.pwaInstallBtn) DOM.pwaInstallBtn.style.display = 'flex';
+    if (DOM.pwaInstallBanner && !isDismissed) {
+      DOM.pwaInstallBanner.style.display = 'flex';
+    }
+  });
+
+  // Handle the sidebar install button click
+  if (DOM.pwaInstallBtn) {
+    DOM.pwaInstallBtn.addEventListener('click', () => {
+      triggerPwaInstall();
+    });
+  }
+
+  // Handle the dashboard banner install button click
+  if (DOM.pwaInstallBannerBtn) {
+    DOM.pwaInstallBannerBtn.addEventListener('click', () => {
+      triggerPwaInstall();
+    });
+  }
+
+  // Handle dismiss click on general install banner
+  if (DOM.pwaInstallBannerClose) {
+    DOM.pwaInstallBannerClose.addEventListener('click', () => {
+      if (DOM.pwaInstallBanner) DOM.pwaInstallBanner.style.display = 'none';
+      sessionStorage.setItem('pwa_install_dismissed', 'true');
+    });
+  }
+
+  // iOS PWA Detection and Guide Banner
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  
+  if (isIOS && !isStandalone) {
+    const isIosDismissed = sessionStorage.getItem('ios_install_dismissed') === 'true';
+    if (DOM.iosInstallBanner && !isIosDismissed) {
+      DOM.iosInstallBanner.style.display = 'flex';
+    }
+  }
+
+  // Handle dismiss click on iOS banner
+  if (DOM.iosInstallBannerClose) {
+    DOM.iosInstallBannerClose.addEventListener('click', () => {
+      if (DOM.iosInstallBanner) DOM.iosInstallBanner.style.display = 'none';
+      sessionStorage.setItem('ios_install_dismissed', 'true');
+    });
+  }
+
+  // Listen for successful installation
+  window.addEventListener('appinstalled', (evt) => {
+    console.log('MedZamanti was successfully installed!');
+    deferredPrompt = null;
+    hidePwaInstallUI();
+  });
+}
+
+function triggerPwaInstall() {
+  if (!deferredPrompt) return;
+  
+  // Show the browser's install prompt
+  deferredPrompt.prompt();
+  
+  // Wait for the user to respond to the prompt
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    deferredPrompt = null;
+    hidePwaInstallUI();
+  });
+}
+
+function hidePwaInstallUI() {
+  if (DOM.pwaInstallBtn) DOM.pwaInstallBtn.style.display = 'none';
+  if (DOM.pwaInstallBanner) DOM.pwaInstallBanner.style.display = 'none';
 }
 
 function openDrugModal(drug) {
