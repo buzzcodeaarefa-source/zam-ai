@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedZamanti - Advanced AI Medical Assistant</title>
+  <!-- SEO Tags -->
+  <meta name="description" content="MedZamanti is a premium AI-powered medical assistant, clinical pharmacy database, drug interaction checker, and symptom triage app.">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./icon.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="dark-theme">
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('Service Worker registered successfully.', reg.scope))
+          .catch(err => console.log('Service Worker registration failed.', err));
+      });
+    }
+  </script>
+
+  <!-- Authentication Portal (Login / Signup Screen) -->
+  <div class="auth-container" id="authContainer" style="display: flex;">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 28px; height: 28px; color: white;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </div>
+        <h1 class="auth-title">MedZamanti</h1>
+        <p class="auth-subtitle">Your Advanced AI Medical & Pharmacy Assistant</p>
+      </div>
+
+      <!-- Login Form View -->
+      <div class="auth-form-view active" id="loginFormView">
+        <h2 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; text-align: center;">Sign In</h2>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="Enter your email...">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password...">
+        </div>
+        <button class="check-btn" id="loginBtn" style="margin-bottom: 16px;">Sign In</button>
+        <p class="auth-toggle-text">Don't have an account? <span id="switchToSignup">Sign Up</span></p>
+      </div>
+
+      <!-- Signup Form View -->
+      <div class="auth-form-view" id="signupFormView" style="display: none;">
+        <h2 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; text-align: center;">Create Account</h2>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" placeholder="Enter your name...">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="signupEmail">Email Address</label>
+          <input type="email" id="signupEmail" placeholder="Enter your email...">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Create a password...">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="signupConfirmPassword">Confirm Password</label>
+          <input type="password" id="signupConfirmPassword" placeholder="Confirm your password...">
+        </div>
+        <button class="check-btn" id="signupBtn" style="margin-bottom: 16px;">Create Account</button>
+        <p class="auth-toggle-text">Already have an account? <span id="switchToLogin">Sign In</span></p>
+      </div>
+      <div style="font-size: 0.65rem; color: var(--text-muted); text-align: center; margin-top: 16px; opacity: 0.6; letter-spacing: 0.5px;">
+        Created by Aarefa
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer" style="display: none;">
+    <!-- Sidebar Overlay (for Mobile Screens) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 20px; height: 20px; color: white;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </div>
+          <span class="logo-text">MedZamanti</span>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close Sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-item" data-tab="chat" id="nav-chat">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm0 0H8.25m4.125 0a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm0 0H12m.002-4.125A3.375 3.375 0 0012 9.75c0 1.116-.54 2.117-1.377 2.747m0-5.494c.837-.63 1.377-1.63 1.377-2.747V3m-4.125 6.75A3.375 3.375 0 006 9.75c0 1.116.54 2.117 1.377 2.747m0-5.494A3.375 3.375 0 006 4.125V3M2.25 18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25H4.5A2.25 2.25 0 002.25 9v9z" />
+          </svg>
+          <span>AI Consultant</span>
+        </button>
+
+        <button class="nav-item" data-tab="database" id="nav-database">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18M10.5 12h3" />
+          </svg>
+          <span>Medication Database</span>
+        </button>
+
+        <button class="nav-item" data-tab="interaction" id="nav-interaction">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+          </svg>
+          <span>Interaction Checker</span>
+        </button>
+
+        <button class="nav-item" data-tab="symptom" id="nav-symptom">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          <span>Symptom Checker</span>
+        </button>
+
+        <button class="nav-item" data-tab="reminders" id="nav-reminders">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Pill Reminder</span>
+        </button>
+
+        <button class="nav-item" data-tab="identifier" id="nav-identifier">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Pill Identifier</span>
+        </button>
+
+        <button class="nav-item" data-tab="profile" id="nav-profile">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>My Health</span>
+        </button>
+
+        <button class="nav-item" data-tab="firstaid" id="nav-firstaid">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h3.75a2.25 2.25 0 012.25 2.25v.75H21a.75.75 0 01.75.75v12.75a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6a.75.75 0 01.75-.75h5.063v-.75a2.25 2.25 0 012.25-2.25zM12 7.5h.008v.008H12V7.5zm0 3.75h.008v.008H12v-.008zm0 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <span>First Aid</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-avatar" id="avatarInitials">US</div>
+          <div class="user-details">
+            <span class="user-name" id="userNameLabel">Patient Profile</span>
+            <span class="user-status" id="userWarningLabel">Allergies: None</span>
+          </div>
+        </div>
+        <div class="footer-actions">
+          <button class="theme-toggle-btn" id="themeToggle">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+            <span>Theme Toggle</span>
+          </button>
+          <button class="theme-toggle-btn" id="logoutBtn" style="border-color: rgba(239, 68, 68, 0.2); color: var(--status-danger);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        </div>
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-align: center; margin-top: 12px; width: 100%; letter-spacing: 0.5px; opacity: 0.7;">
+          Created by Aarefa
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobileMenuOpen" aria-label="Open Navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+            </svg>
+          </button>
+          <div class="header-title-area">
+            <h2 id="viewTitle">Dashboard</h2>
+          </div>
+        </div>
+        <div class="header-right">
+          <span class="status-indicator">
+            <span class="status-dot" id="networkDot"></span>
+            <span id="networkText">Online</span>
+          </span>
+          <span class="api-badge inactive" id="apiKeyStatus">
+            No API Key
+          </span>
+        </div>
+      </header>
+
+      <!-- Scrollable App Content View -->
+      <div class="app-view-container" id="appViewContainer">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="view-dashboard" class="app-view active">
+          <div class="welcome-banner">
+            <h1 id="welcomeGreeting">Hello, Patient!</h1>
+            <p>Welcome to MedZamanti, your advanced pharmacy database and personal medical assistant. Use the tools below or in the sidebar to check medications, track reminders, check drug interactions, or diagnostic triage guidelines.</p>
+          </div>
+
+          <div class="dashboard-stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 24px; height: 24px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="statsReminders">0</span>
+                <span class="stat-label">Doses Remaining Today</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon emerald">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 24px; height: 24px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="statsAllergies">0</span>
+                <span class="stat-label">Profile Allergies Checked</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 24px; height: 24px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-value" id="statsConditions">0</span>
+                <span class="stat-label">Chronic Conditions Tracked</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-layout-grid">
+            <div class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <h3>Quick Actions</h3>
+              </div>
+              <div class="dashboard-shortcut-grid">
+                <button class="shortcut-card" data-shortcut="chat">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <span>Ask AI Assistant</span>
+                </button>
+                <button class="shortcut-card" data-shortcut="interaction">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                  <span>Check Interactions</span>
+                </button>
+                <button class="shortcut-card" data-shortcut="symptom">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>Triage Symptoms</span>
+                </button>
+                <button class="shortcut-card" data-shortcut="identifier">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span>Identify Pill</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <h3>Today's Schedule</h3>
+                <button class="dashboard-btn-link" id="dashViewRemindersLink">View All</button>
+              </div>
+              <div id="dashboardRemindersList" style="display: flex; flex-direction: column; gap: 10px;">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; font-style: italic;">No medications scheduled for today. Add one in Pill Reminders.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. AI CONSULTANT CHAT VIEW -->
+        <section id="view-chat" class="app-view">
+          <div class="chat-window">
+            <div class="chat-banner">
+              <div class="chat-banner-info">
+                🔒 HIPAA Compliant Client-side Consultation. No logs are saved externally.
+              </div>
+              <button style="color: var(--primary); font-size: 0.8rem; font-weight: 600;" id="clearChatBtn">Clear History</button>
+            </div>
+            
+            <div class="chat-messages-container" id="chatMessages">
+              <div class="chat-message system">
+                <div class="message-icon">🤖</div>
+                <div class="message-bubble">
+                  <h3>Hello! I am MedZamanti AI.</h3>
+                  <p>I am your clinical medical and pharmacy assistant. You can ask me any questions about medications, active brand names, dosages, side effects, and warning systems.</p>
+                  <p>Example queries:</p>
+                  <ul>
+                    <li><em>"What is the standard dosage for Amoxicillin?"</em></li>
+                    <li><em>"Can I drink alcohol while taking Ibuprofen?"</em></li>
+                    <li><em>"Is there an interaction between warfarin and aspirin?"</em></li>
+                  </ul>
+                  <small style="color: var(--text-muted); display: block; margin-top: 8px;">For advanced, dynamically generated advice, please enter your Google Gemini API Key in the settings panel of the <strong>My Health</strong> section.</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Inputs -->
+            <div class="chat-input-area">
+              <div class="chat-input-wrapper">
+                <input type="text" class="chat-text-input" id="chatInput" placeholder="Ask a pharmacy or medical question...">
+                <button class="voice-btn" id="voiceInputBtn" title="Speak Question">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              </div>
+              <button class="send-btn" id="chatSendBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px; transform: rotate(-45deg); margin-left: 2px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. MEDICATION DATABASE VIEW -->
+        <section id="view-database" class="app-view">
+          <div class="search-controls">
+            <div class="search-bar-wrapper">
+              <span class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                </svg>
+              </span>
+              <input type="text" class="search-input" id="dbSearchInput" placeholder="Search by generic name, brand name, or indication...">
+            </div>
+            
+            <div class="class-filters" id="classFiltersContainer">
+              <button class="filter-badge active" data-class="all">All Classes</button>
+              <button class="filter-badge" data-class="antibiotic">Antibiotics</button>
+              <button class="filter-badge" data-class="nsaid">NSAIDs / Analgesics</button>
+              <button class="filter-badge" data-class="cardiovascular">Cardiovascular</button>
+              <button class="filter-badge" data-class="antidiabetic">Antidiabetic</button>
+              <button class="filter-badge" data-class="other">Others</button>
+            </div>
+          </div>
+
+          <div class="drugs-grid" id="drugsGrid">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- 4. DRUG INTERACTIONS VIEW -->
+        <section id="view-interaction" class="app-view">
+          <div class="interaction-checker-container">
+            <div class="interaction-selection-panel">
+              <div class="select-drugs-wrapper">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Select Medications to Analyze</label>
+                <select class="drug-select-dropdown" id="interactionSelect">
+                  <option value="" disabled selected>Choose a drug to add...</option>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="selected-drugs-list" id="interactionChips">
+                <!-- Chips added dynamically -->
+              </div>
+
+              <button class="check-btn" id="checkInteractionsBtn">Analyze Interactions</button>
+            </div>
+
+            <div class="interaction-results-panel" id="interactionResults">
+              <div style="text-align: center; padding: 40px; color: var(--text-secondary); font-style: italic;">
+                Add at least two medications to run the clinical cross-check analysis.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. SYMPTOM CHECKER VIEW -->
+        <section id="view-symptom" class="app-view">
+          <div class="wizard-card">
+            <!-- Progress Bar -->
+            <div class="wizard-progress">
+              <div class="wizard-progress-bar" id="wizardProgressBar" style="width: 25%"></div>
+              <div class="wizard-step-node active" id="node-1">1</div>
+              <div class="wizard-step-node" id="node-2">2</div>
+              <div class="wizard-step-node" id="node-3">3</div>
+              <div class="wizard-step-node" id="node-4">4</div>
+            </div>
+
+            <!-- Steps -->
+            <div class="wizard-step-content active" id="step-1">
+              <p class="wizard-question" id="step-1-question">Select your primary symptom group:</p>
+              <div class="wizard-options-list" id="step-1-options">
+                <!-- Dynamic options -->
+              </div>
+            </div>
+
+            <div class="wizard-step-content" id="step-2">
+              <p class="wizard-question" id="step-2-question">Loading question...</p>
+              <div class="wizard-options-list" id="step-2-options">
+                <!-- Dynamic options -->
+              </div>
+            </div>
+
+            <div class="wizard-step-content" id="step-3">
+              <p class="wizard-question" id="step-3-question">Loading question...</p>
+              <div class="wizard-options-list" id="step-3-options">
+                <!-- Dynamic options -->
+              </div>
+            </div>
+
+            <div class="wizard-step-content" id="step-4">
+              <div id="triageResultContainer">
+                <!-- Dynamic triage card -->
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="wizard-back-btn" id="wizardBackBtn" style="visibility: hidden;">&larr; Back</button>
+              <button class="wizard-back-btn" id="wizardRestartBtn" style="display: none;">Restart Checker</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. PILL REMINDERS VIEW -->
+        <section id="view-reminders" class="app-view">
+          <div class="reminder-layout">
+            <div class="reminder-list-section">
+              <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 12px;">Active Doses & Log</h3>
+              <div id="remindersList">
+                <!-- Reminders populated dynamically -->
+              </div>
+            </div>
+
+            <div class="add-reminder-card">
+              <h3>Schedule Medication</h3>
+              <form id="reminderForm" onsubmit="return false;">
+                <div class="form-group">
+                  <label for="remMedSelect">Medication Name</label>
+                  <select id="remMedSelect" required>
+                    <option value="" disabled selected>Select from database...</option>
+                    <!-- Loaded dynamically -->
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="remDosage">Custom Dosage</label>
+                  <input type="text" id="remDosage" placeholder="e.g. 500mg, 1 tablet, 2 puffs" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="remTime">Scheduled Time</label>
+                  <input type="time" id="remTime" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="remFrequency">Frequency</label>
+                  <select id="remFrequency">
+                    <option value="Daily">Once Daily</option>
+                    <option value="Twice Daily">Twice Daily</option>
+                    <option value="Three Times Daily">Three Times Daily</option>
+                    <option value="As Needed (PRN)">As Needed (PRN)</option>
+                  </select>
+                </div>
+
+                <button type="submit" class="add-btn" id="addReminderBtn">Save Schedule</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. PILL IDENTIFIER VIEW -->
+        <section id="view-identifier" class="app-view">
+          <div class="identifier-layout">
+            <div class="pill-visual-preview-box">
+              <h4 style="margin-bottom: 16px; font-weight: 600;">Visual Pill Preview</h4>
+              <div class="pill-canvas-container">
+                <svg id="pillSvg" class="pill-svg" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Dynamic SVG shape based on pill parameters -->
+                  <g id="pillGraphicGroup">
+                    <rect id="pillBody" x="25" y="35" width="50" height="30" rx="15" fill="#f8fafc" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+                    <line id="pillSplitLine" x1="50" y1="35" x2="50" y2="65" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" />
+                    <text id="pillImprint" x="50" y="54" fill="rgba(0,0,0,0.4)" font-size="7" font-weight="700" text-anchor="middle" font-family="sans-serif">MED</text>
+                  </g>
+                </svg>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Rendering dynamically matches your selected shape and color filters.</p>
+            </div>
+
+            <div class="add-reminder-card">
+              <h3>Filter Pill Traits</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group">
+                  <label for="pillColorSelect">Color</label>
+                  <select id="pillColorSelect">
+                    <option value="any">Any Color</option>
+                    <option value="White">White</option>
+                    <option value="Brown">Brown</option>
+                    <option value="Blue/Pink">Blue/Pink</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Peach">Peach</option>
+                    <option value="Yellow">Yellow</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="pillShapeSelect">Shape</label>
+                  <select id="pillShapeSelect">
+                    <option value="any">Any Shape</option>
+                    <option value="Round">Round</option>
+                    <option value="Oval">Oval</option>
+                    <option value="Capsule">Capsule</option>
+                    <option value="Inhaler">Inhaler / Device</option>
+                    <option value="Diamond">Diamond</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="pillImprintInput">Imprint / Text</label>
+                <input type="text" id="pillImprintInput" placeholder="e.g. TYLENOL 500, AMOX, PD 155...">
+              </div>
+
+              <h4 style="font-size: 0.85rem; font-weight: 600; margin: 24px 0 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">Matching Medications</h4>
+              <div id="pillIdentifierResults" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. MY HEALTH PROFILE & SETTINGS VIEW -->
+        <section id="view-profile" class="app-view">
+          <div class="profile-card">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">Patient Clinical Profile</h3>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+              <div class="form-group">
+                <label for="profName">Full Name</label>
+                <input type="text" id="profName" placeholder="Enter patient name...">
+              </div>
+              <div class="form-group">
+                <label for="profAge">Age</label>
+                <input type="number" id="profAge" placeholder="e.g. 35">
+              </div>
+              <div class="form-group">
+                <label for="profGender">Gender</label>
+                <select id="profGender">
+                  <option value="Unspecified">Unspecified</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Allergies Checkboxes -->
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Active Medication Allergies</h4>
+              <div class="checkbox-grid" id="defaultAllergiesGrid">
+                <label class="checkbox-label"><input type="checkbox" class="profile-allergy-cb" value="Penicillin"> Penicillin Class</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-allergy-cb" value="Cephalosporin"> Cephalosporins</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-allergy-cb" value="NSAID"> NSAIDs (Aspirin, Ibuprofen)</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-allergy-cb" value="Sulfa"> Sulfa Drugs</label>
+              </div>
+              <div class="checkbox-grid" id="customAllergiesList" style="margin-top: 8px;"></div>
+              <div style="display: flex; gap: 8px; margin-top: 12px; max-width: 400px;">
+                <input type="text" id="customAllergyInput" placeholder="Add another allergy (e.g. Codeine)" style="margin: 0; font-size: 0.85rem; padding: 8px 12px;">
+                <button type="button" class="check-btn" id="addCustomAllergyBtn" style="width: auto; padding: 8px 16px; margin: 0; font-size: 0.85rem;">Add</button>
+              </div>
+            </div>
+
+            <!-- Chronic Conditions -->
+            <div style="margin-bottom: 32px;">
+              <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Chronic Medical Conditions</h4>
+              <div class="checkbox-grid" id="defaultConditionsGrid">
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Hypertension"> Hypertension (High BP)</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Diabetes"> Diabetes Mellitus</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Heart Failure"> Heart Failure</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Asthma"> Asthma / COPD</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Renal Disease"> Kidney Disease</label>
+                <label class="checkbox-label"><input type="checkbox" class="profile-condition-cb" value="Liver Disease"> Liver Disease</label>
+              </div>
+              <div class="checkbox-grid" id="customConditionsList" style="margin-top: 8px;"></div>
+              <div style="display: flex; gap: 8px; margin-top: 12px; max-width: 400px;">
+                <input type="text" id="customConditionInput" placeholder="Add another condition (e.g. Thyroid)" style="margin: 0; font-size: 0.85rem; padding: 8px 12px;">
+                <button type="button" class="check-btn" id="addCustomConditionBtn" style="width: auto; padding: 8px 16px; margin: 0; font-size: 0.85rem;">Add</button>
+              </div>
+            </div>
+
+            <button class="check-btn" id="saveProfileBtn">Save Health Profile</button>
+          </div>
+        </section>
+
+        <!-- 9. FIRST AID & EMERGENCY VIEW -->
+        <section id="view-firstaid" class="app-view">
+          <div class="emergency-call-bar">
+            <div class="emergency-call-text">
+              <h3>🚨 Severe Medical Emergency?</h3>
+              <p>If you or someone nearby is experiencing life-threatening symptoms, contact emergency responders immediately.</p>
+            </div>
+            <button class="emergency-btn" id="emergencyPhoneCallBtn">Call Emergency Services (911)</button>
+          </div>
+
+          <div class="emergency-grid">
+            <div class="emergency-card red-border">
+              <h4>
+                <span style="font-size: 1.2rem;">❤️</span> Cardiopulmonary Resuscitation (CPR)
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>Check Safety:</strong> Verify the scene is secure for both you and the victim.</li>
+                <li><strong>Assess Responsiveness:</strong> Tap shoulders and shout "Are you okay?". Check breathing for 10 seconds.</li>
+                <li><strong>Call for Help:</strong> Shout for nearby help, dial 911, and get an AED if available.</li>
+                <li><strong>Chest Compressions:</strong> Place hands in center of chest. Push hard and fast (100–120 compressions/min, at least 2 inches deep).</li>
+                <li><strong>Rescue Breaths:</strong> If trained, give 2 rescue breaths after every 30 compressions. If untrained, perform hands-only CPR.</li>
+              </ol>
+            </div>
+
+            <div class="emergency-card red-border">
+              <h4>
+                <span style="font-size: 1.2rem;">💨</span> Choking (Heimlich Maneuver)
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>Confirm Choking:</strong> Ask "Are you choking?". Look for the universal sign (hands clutched to throat).</li>
+                <li><strong>Give Back Blows:</strong> Stand behind them, lean them forward, and deliver 5 firm blows between shoulder blades with heel of hand.</li>
+                <li><strong>Abdominal Thrusts:</strong> Wrap arms around waist. Place a fist slightly above belly button, grasp it, and press hard inward and upward 5 times.</li>
+                <li><strong>Alternate:</strong> Repeat 5 blows and 5 thrusts until object is expelled or person goes unconscious.</li>
+                <li><strong>Unconscious:</strong> If unconscious, lower to ground, call 911, and start CPR. Check mouth for obstruction.</li>
+              </ol>
+            </div>
+
+            <div class="emergency-card red-border">
+              <h4>
+                <span style="font-size: 1.2rem;">🧠</span> Stroke Triage (F.A.S.T.)
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>F - Face Drooping:</strong> Ask the person to smile. Does one side of the face droop or is it numb?</li>
+                <li><strong>A - Arm Weakness:</strong> Ask the person to raise both arms. Does one arm drift downward?</li>
+                <li><strong>S - Speech Difficulty:</strong> Ask them to repeat a simple sentence. Is their speech slurred or hard to understand?</li>
+                <li><strong>T - Time to Call 911:</strong> If they show any of these symptoms, call 911 immediately, noting the time symptoms began.</li>
+              </ol>
+            </div>
+
+            <div class="emergency-card">
+              <h4>
+                <span style="font-size: 1.2rem;">🩸</span> Severe Bleeding Control
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>Apply Pressure:</strong> Place a clean cloth, bandage, or clothing directly over the wound. Press hard with both hands.</li>
+                <li><strong>Maintain Pressure:</strong> Do not release pressure to check the wound. Keep pressing continuously.</li>
+                <li><strong>Add Dressing:</strong> If blood seeps through, add more cloth on top. Do not remove the original dressing.</li>
+                <li><strong>Elevate:</strong> Elevate the bleeding limb above heart level if possible and safe to do so.</li>
+                <li><strong>Tourniquet:</strong> If bleeding is life-threatening on a limb and pressure fails, apply a tourniquet high and tight.</li>
+              </ol>
+            </div>
+
+            <div class="emergency-card">
+              <h4>
+                <span style="font-size: 1.2rem;">🔥</span> Thermal Burns
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>Cool the Burn:</strong> Run cool (not cold) clean tap water over the burn for 10 to 20 minutes immediately.</li>
+                <li><strong>Remove Jewelry:</strong> Gently slide off rings, watches, or tight clothing before swelling begins.</li>
+                <li><strong>Cover Loosely:</strong> Wrap the burn with a clean, dry, non-stick sterile bandage or plastic wrap.</li>
+                <li><strong>Protect:</strong> Do not apply ice, butter, ointments, or home remedies, as they trap heat and invite infection.</li>
+                <li><strong>Seek Medical Care:</strong> Go to clinic/ER if burn is large, blistered, on face, hands, or joints.</li>
+              </ol>
+            </div>
+
+            <div class="emergency-card">
+              <h4>
+                <span style="font-size: 1.2rem;">🧪</span> Poisoning & Overdose
+              </h4>
+              <ol class="emergency-steps">
+                <li><strong>Identify Poison:</strong> Determine what substance was swallowed, inhaled, or touched, and how much.</li>
+                <li><strong>Assess Status:</strong> If victim is unconscious, shaking, or struggling to breathe, call 911 immediately.</li>
+                <li><strong>Call Poison Control:</strong> If conscious, call the Poison Control Center (e.g. 1-800-222-1222 in US) for specialized advice.</li>
+                <li><strong>Do NOT Induce Vomiting:</strong> Do not give ipecac or make them throw up unless directed by a poison specialist.</li>
+                <li><strong>Flush Skin/Eyes:</strong> If on skin or eyes, rinse thoroughly with warm water for 15 minutes.</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Drug Details Modal -->
+  <div class="modal-overlay" id="drugDetailModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <span class="drug-card-class" id="modalDrugClass">Penicillin Antibiotic</span>
+          <h2 class="drug-card-name" id="modalDrugName">Amoxicillin</h2>
+          <span class="drug-card-brand" id="modalDrugBrand">Amoxil, Moxatag</span>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close details">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="modalDrugBody">
+        <!-- Dynamically rendered clinical details -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading script as a module -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

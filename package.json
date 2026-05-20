@@ -1,0 +1,22 @@
+{
+  "name": "medzamanti",
+  "version": "1.0.0",
+  "description": "MedZamanti - Advanced AI Medical and Pharmacy Assistant",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "medical",
+    "assistant",
+    "pharmacy",
+    "pwa"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

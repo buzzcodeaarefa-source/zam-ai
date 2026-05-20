@@ -1,0 +1,19 @@
+{
+  "name": "MedZamanti AI Medical Assistant",
+  "short_name": "MedZamanti",
+  "description": "Advanced AI Medical and Pharmacy Assistant for dosages, interactions, and symptom triage.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0f1d",
+  "theme_color": "#0d9488",
+  "orientation": "portrait-primary",
+  "categories": ["medical", "health", "productivity"],
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
