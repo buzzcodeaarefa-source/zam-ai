@@ -133,6 +133,7 @@ const DOM = {
   profName: document.getElementById('profName'),
   profAge: document.getElementById('profAge'),
   profGender: document.getElementById('profGender'),
+  profGeminiKey: document.getElementById('profGeminiKey'),
   saveProfileBtn: document.getElementById('saveProfileBtn'),
   customAllergyInput: document.getElementById('customAllergyInput'),
   addCustomAllergyBtn: document.getElementById('addCustomAllergyBtn'),
@@ -449,6 +450,7 @@ function initProfileSettings() {
     state.profile.name = DOM.profName.value.trim();
     state.profile.age = DOM.profAge.value.trim();
     state.profile.gender = DOM.profGender.value;
+    state.geminiKey = DOM.profGeminiKey.value.trim();
     
     // Gather selected allergies
     const selectedAllergies = [];
@@ -475,6 +477,7 @@ function syncProfileUI() {
   DOM.profName.value = state.profile.name || '';
   DOM.profAge.value = state.profile.age || '';
   DOM.profGender.value = state.profile.gender || 'Unspecified';
+  DOM.profGeminiKey.value = state.geminiKey || '';
 
   // 1. Render default checkboxes state
   const defaultAllergies = ["Penicillin", "Cephalosporin", "NSAID", "Sulfa"];

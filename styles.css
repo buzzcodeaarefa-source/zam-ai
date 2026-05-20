@@ -1773,16 +1773,126 @@ input, select, textarea {
   }
   
   .top-header {
-    padding: 0 16px;
+    padding: 0 12px;
+    height: 60px; /* slightly smaller header height on mobile */
+  }
+  
+  .header-left {
+    gap: 8px;
+    flex: 1;
+    min-width: 0; /* allows text truncation/wrap safely */
+  }
+  
+  .header-title-area {
+    min-width: 0;
+    flex: 1;
+  }
+  
+  .header-title-area h2 {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .header-right {
+    gap: 8px;
+  }
+  
+  .status-indicator {
+    padding: 6px;
+    border-radius: 50%;
+  }
+  
+  .status-indicator span:not(.status-dot) {
+    display: none; /* Hide 'Online/Offline' text on mobile, keep only status dot */
+  }
+  
+  .api-badge {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    white-space: nowrap;
   }
   
   .app-view-container {
     padding: 16px;
+    height: calc(100vh - 60px); /* adjust for smaller header height */
+  }
+  
+  /* Modal responsive improvements */
+  .modal-overlay {
+    padding: 12px;
+  }
+  
+  .modal-content {
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 16px 16px 12px;
+  }
+  
+  .modal-header div {
+    max-width: calc(100% - 36px);
+  }
+  
+  .modal-header .drug-card-class {
+    font-size: 0.65rem;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .modal-header .drug-card-name {
+    font-size: 1.1rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .modal-body {
+    padding: 16px;
+  }
+  
+  /* Clinical details table mobile stack layout */
+  .clinical-table, 
+  .clinical-table thead, 
+  .clinical-table tbody, 
+  .clinical-table th, 
+  .clinical-table td, 
+  .clinical-table tr { 
+    display: block; 
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .clinical-table thead {
+    display: none; /* hide headers as they stack */
+  }
+  
+  .clinical-table tr {
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--glass-border);
+    padding-bottom: 10px;
+  }
+  
+  .clinical-table td {
+    border-bottom: none;
+    padding: 4px 0;
+  }
+  
+  .clinical-table td:first-child {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-top: 8px;
   }
   
   /* Widget adaptations */
   .chat-window {
-    height: calc(100vh - var(--header-height) - 40px);
+    height: calc(100vh - 100px);
   }
   
   .chat-message {
